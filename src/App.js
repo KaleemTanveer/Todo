@@ -1,83 +1,105 @@
-import React, { Component } from "react";
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from "react";
 import AddTodo from "./AddTodo";
-import TodoItem from "./TodoItems";
-import "./App.css";
-class App extends Component {
-  state = {
-    Todos: [],
-    a: false,
-  };
-  editTodoFromState = (index, newText) => {
-    const newTodos = this.state.Todos.map((todo, i) => {
-      if (index === i) {
-        return {
-          ...todo,
-          text: newText,
+import './index'
+
+const App = () => {
+  const [inputList, setInputList] = useState("");
+  const [items, setItems] = useState([]);
+  const [isEditing, setIsEditing] = useState(true);
+  const [isEditItem, setIsEditItem] = useState(null);
+
+  // const itemEvent = (event) => {
+  //   if (event.target.value == "") {
+  //     return;
+  //   }
+  //   setInputList(event.target.value);
+  // };
+
+  const listOfItem = () => {
+    if (inputList === "") {
+      return alert("Input Felid is empty");
+    } else if (inputList && !isEditing) {
+      setItems(
+        items.map((elem) => {
+          if (elem.id == isEditItem) return { ...elem, name: inputList };
+          return elem;
+        })
+      );
+      setIsEditing(true);
+      setInputList("");
+      setIsEditItem(null);
+    } else
+      setItems((oldValue) => {
+        const allInputData = {
+          id: new Date().getTime().toString(),
+          name: inputList,
         };
-      }
-      return todo;
-    });
-    this.setState({
-      Todos: newTodos,
+        return [...oldValue, allInputData];
+      });
+    setInputList("");
+  };
+
+  const del = () => {
+    setItems(() => {
+      return [];
     });
   };
-  deleteTodoFromState = (index) => {
-    const newTodos = this.state.Todos.filter((todo, i) => {
-      return index === i ? false : true;
-    });
-    this.setState({
-      Todos: newTodos,
-    });
-  };
-  toggleComplete = (index) => {
-    console.log(index);
-    const newTodos = this.state.Todos.map((todo, i) => {
-      if (index === i) {
-        console.log(index);
-        return {
-          ...todo,
-          completed: !todo.completed,
-        };
-      }
-      return todo;
-    });
-    this.setState({
-      Todos: [...newTodos],
+
+  const deleteItem = (id) => {
+    setItems((oldValue) => {
+      return oldValue.filter((arrElement) => {
+        return arrElement.id != id;
+      });
     });
   };
-  addTodosToState = (a) => {
-    // console.log(a);
-    const newTodos = {
-      text: a,
-      completed: false,
-    };
-    this.setState({
-      Todos: [...this.state.Todos, newTodos],
+  const editTodo = (id) => {
+    let newEditItem = items.find((elem) => {
+      return elem.id == id;
     });
-    console.log(this.state.Todos);
+    setIsEditing(false);
+    setInputList(newEditItem.name);
+    setIsEditItem(id);
   };
-  render() {
-    return (
-      <div className="main_div">
-        <div className="center_div">
-          <h2>Today's Plan</h2>
-          <AddTodo addTodosToState={this.addTodosToState} />
-          {this.state.Todos.map((todo, index) => {
+
+  return (
+    <div className="main_div">
+      <div className="center_div">
+        <br />
+        <h1>ToDo List</h1>
+        <br />
+        <input
+          type="text"
+          placeholder="Enter text here"
+          // itemEvent
+
+          onChange={(e) => setInputList(e.target.value)}
+          value={inputList}
+        />
+        {isEditing ? (
+          <button onClick={listOfItem}>+</button>
+        ) : (
+          <button onClick={listOfItem}>Edit</button>
+        )}
+
+        
+        <ol>
+          {items.map((itemVal, index) => {
             return (
-              <TodoItem
-                editTodoFromState={this.editTodoFromState}
-                deleteTodoFromState={this.deleteTodoFromState}
-                toggleComplete={this.toggleComplete}
-                index={index}
+              <AddTodo
+                items={itemVal}
+                onDel={deleteItem}
                 key={index}
-                todo={todo}
+                id={index}
+                editTodo={editTodo}
+                editing={isEditing}
               />
             );
           })}
-        </div>
+        </ol>
+        <button  onClick={del}>Del All</button>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
 export default App;
