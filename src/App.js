@@ -6,6 +6,7 @@ import "./App.css";
 class App extends Component {
   state = {
     Todos: [],
+    a: false,
   };
   editTodoFromState = (index, newText) => {
     const newTodos = this.state.Todos.map((todo, i) => {
@@ -59,27 +60,24 @@ class App extends Component {
   render() {
     return (
       <div className="main_div">
-      <div className="center_div">
-      <h2 >Today's Plan</h2>
-        <AddTodo addTodosToState={this.addTodosToState} />
-        {this.state.Todos.map((todo, index) => {
-          return (
-            <TodoItem
-              editTodoFromState={this.editTodoFromState}
-              deleteTodoFromState={this.deleteTodoFromState}
-              toggleComplete={this.toggleComplete}
-              index={index}
-              key={index}
-              todo={todo}
-            />
-          );
-        })}
-        
+        <div className="center_div">
+          <h2>Today's Plan</h2>
+          <AddTodo addTodosToState={this.addTodosToState} />
+          {this.state.Todos.map((todo, index) => {
+            return (
+              <TodoItem
+                editTodoFromState={this.editTodoFromState}
+                deleteTodoFromState={this.deleteTodoFromState}
+                toggleComplete={this.toggleComplete}
+                index={index}
+                key={index}
+                todo={todo}
+              />
+            );
+          })}
         </div>
-        </div>
-      
+      </div>
     );
-    
   }
 }
 export default App;
