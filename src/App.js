@@ -1,19 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddTodo from "./AddTodo";
-import './index'
+import "./index";
+import axios from "axios";
 
 const App = () => {
   const [inputList, setInputList] = useState("");
   const [items, setItems] = useState([]);
+  const [getArray, getItems] = useState([]);
   const [isEditing, setIsEditing] = useState(true);
   const [isEditItem, setIsEditItem] = useState(null);
 
-  // const itemEvent = (event) => {
-  //   if (event.target.value == "") {
-  //     return;
-  //   }
-  //   setInputList(event.target.value);
-  // };
+  useEffect(() => {
+    getData();
+  }, []);
+  const getData = () => {
+    axios.get("http://localhost:3000/posts").then((post) => {
+      getItems(post.data);
+    });
+  };
 
   const listOfItem = () => {
     if (inputList === "") {
@@ -28,38 +32,74 @@ const App = () => {
       setIsEditing(true);
       setInputList("");
       setIsEditItem(null);
-    } else
-      setItems((oldValue) => {
-        const allInputData = {
-          id: new Date().getTime().toString(),
-          name: inputList,
-        };
-        return [...oldValue, allInputData];
-      });
-    setInputList("");
+    } else {
+      console.log("add form");
+      const allInputData = {
+        name: inputList,
+      };
+      setItems(allInputData);
+    }
   };
 
   const del = () => {
-    setItems(() => {
+    getItems(() => {
       return [];
     });
   };
 
   const deleteItem = (id) => {
-    setItems((oldValue) => {
-      return oldValue.filter((arrElement) => {
-        return arrElement.id != id;
-      });
+    axios.delete(`http://localhost:3000/posts/${id}`).then(() => {
+      getData();
     });
   };
+
   const editTodo = (id) => {
-    let newEditItem = items.find((elem) => {
+    let newEditItem = getArray.find((elem, i) => {
       return elem.id == id;
     });
+
     setIsEditing(false);
     setInputList(newEditItem.name);
     setIsEditItem(id);
   };
+
+  function onFormSubmit(e) {
+    if (inputList === "") {
+      e.preventDefault();
+      return alert("Input Felid is empty");
+    } else if (inputList && !isEditing) {
+      e.preventDefault();
+      getItems(
+        getArray.map((elem) => {
+          if (elem.id == isEditItem) {
+            const allInputData = {
+              name: inputList,
+            };
+            axios
+              .put(`http://localhost:3000/posts/${elem.id}`, allInputData)
+              .then((res) => {});
+            return { ...elem, name: inputList };
+          }
+          return elem;
+        })
+      );
+
+      setInputList("");
+      getData();
+      setIsEditing(true);
+      setInputList("");
+      setIsEditItem(null);
+      return;
+    } else e.preventDefault();
+
+    const allInputData = {
+      name: inputList,
+    };
+    axios.post(`http://localhost:3000/posts`, allInputData).then((res) => {});
+    setInputList("");
+    getData();
+    return;
+  }
 
   return (
     <div className="main_div">
@@ -67,28 +107,29 @@ const App = () => {
         <br />
         <h1>ToDo List</h1>
         <br />
-        <input
-          type="text"
-          placeholder="Enter text here"
-          // itemEvent
+        <form onSubmit={onFormSubmit}>
+          <input
+            type="text"
+            placeholder="Enter text here"
+            // itemEvent
+            onChange={(e) => setInputList(e.target.value)}
+            value={inputList}
+          />
 
-          onChange={(e) => setInputList(e.target.value)}
-          value={inputList}
-        />
-        {isEditing ? (
-          <button onClick={listOfItem}>+</button>
-        ) : (
-          <button onClick={listOfItem}>Edit</button>
-        )}
+          {isEditing ? (
+            <button type="submit">+</button>
+          ) : (
+            <button type="submit">Edit</button>
+          )}
+        </form>
 
-        
         <ol>
-          {items.map((itemVal, index) => {
+          {getArray.map((itemVal, index) => {
             return (
               <AddTodo
+                key={index}
                 items={itemVal}
                 onDel={deleteItem}
-                key={index}
                 id={index}
                 editTodo={editTodo}
                 editing={isEditing}
@@ -96,7 +137,7 @@ const App = () => {
             );
           })}
         </ol>
-        <button  onClick={del}>Del All</button>
+        {/* <button onClick={del}>Del All</button> */}
       </div>
     </div>
   );
