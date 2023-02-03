@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import AddTodo from "./AddTodo";
 import "./index";
 import axios from "axios";
+
+const allProps = createContext();
 
 const App = () => {
   const [inputList, setInputList] = useState("");
@@ -19,28 +21,6 @@ const App = () => {
     });
   };
 
-  const listOfItem = () => {
-    if (inputList === "") {
-      return alert("Input Felid is empty");
-    } else if (inputList && !isEditing) {
-      setItems(
-        items.map((elem) => {
-          if (elem.id == isEditItem) return { ...elem, name: inputList };
-          return elem;
-        })
-      );
-      setIsEditing(true);
-      setInputList("");
-      setIsEditItem(null);
-    } else {
-      console.log("add form");
-      const allInputData = {
-        name: inputList,
-      };
-      setItems(allInputData);
-    }
-  };
-
   const del = () => {
     getItems(() => {
       return [];
@@ -48,12 +28,14 @@ const App = () => {
   };
 
   const deleteItem = (id) => {
+    console.log(id);
     axios.delete(`http://localhost:3000/posts/${id}`).then(() => {
       getData();
     });
   };
 
   const editTodo = (id) => {
+    console.log(id);
     let newEditItem = getArray.find((elem, i) => {
       return elem.id == id;
     });
@@ -126,14 +108,25 @@ const App = () => {
         <ol>
           {getArray.map((itemVal, index) => {
             return (
-              <AddTodo
+              <allProps.Provider
                 key={index}
-                items={itemVal}
-                onDel={deleteItem}
-                id={index}
-                editTodo={editTodo}
-                editing={isEditing}
-              />
+                value={{
+                  items: { itemVal },
+                  onDel: { deleteItem },
+                  id: { index },
+                  editTodo: { editTodo },
+                  editing: { isEditing },
+                }}
+              >
+                <AddTodo
+                // key={index}
+                // items={itemVal}
+                // onDel={deleteItem}
+                // id={index}
+                // editTodo={editTodo}
+                // editing={isEditing}
+                />
+              </allProps.Provider>
             );
           })}
         </ol>
@@ -144,3 +137,4 @@ const App = () => {
 };
 
 export default App;
+export { allProps };
