@@ -11,7 +11,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  text-align: start;
+  text-align: center;
 }
 .center_div{
   width: 25%;
@@ -42,7 +42,7 @@ input{
 }
 
 button{
-  /* min-height: 40px; */
+  min-height: 40px;
   width: 40px;
   background-color: transparent;
   background-color: #8566aa;
@@ -51,7 +51,7 @@ button{
   border:none;
   outline: none;
   margin-left: 10px;
-  /* border-radius: 30px; */
+  border-radius: 30px;
 }
 
 button:hover{

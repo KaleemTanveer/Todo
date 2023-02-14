@@ -1,30 +1,43 @@
-import React, { useContext } from "react";
-import { allProps } from "./App";
-import Test2 from "./Test2";
+import React from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { width } from "@mui/system";
+import { Box, Button } from "@mui/material";
 
-const AddTodo = () => {
-  const { key, items, onDel, id, editTodo, editing} =
-    useContext(allProps);
-  // console.log(items.id);
+const AddTodo = (props) => {
+
   return (
-    <div>
-      <button
+    <Box>
+      <Button
+      variant="outlined"
+        style={{
+          maxWidth: "30px",
+          maxHeight: "30px",
+          minWidth: "30px",
+          minHeight: "30px",
+        }}
         onClick={() => {
-          console.log(onDel);
-          onDel.deleteItem(items.itemVal.id);
+          props.onDel(props.items.id);
         }}
       >
-        x
-      </button>
-      <button
+        <DeleteIcon />
+      </Button>
+      <Button
+      variant="outlined"
+        style={{
+          maxWidth: "30px",
+          maxHeight: "30px",
+          minWidth: "30px",
+          minHeight: "30px",
+        }}
         onClick={() => {
-          editTodo.editTodo(items.itemVal.id);
+          props.editTodo(props.items.id, props?.items?.data);
         }}
       >
-        Edit
-      </button>
-      {items.itemVal.name}
-    </div>
+         <EditIcon />
+      </Button>
+      {props.items.data}
+    </Box>
   );
 };
 
