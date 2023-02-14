@@ -9,9 +9,6 @@ import { Box, Button } from "@mui/material";
 let editId;
 const App = () => {
   const [inputList, setInputList] = useState("");
-  const [items, setItems] = useState([]);
-  // const [isEditing, setIsEditing] = useState(true);
-  const [isEditItem, setIsEditItem] = useState(null);
   const dispatch = useDispatch();
   const list = useSelector((state) => state.list);
   const isEditing = useSelector((state) => state.isEditing);
