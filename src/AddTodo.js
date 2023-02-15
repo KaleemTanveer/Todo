@@ -10,7 +10,7 @@ const AddTodo = (props) => {
     <Box>
       <Button
       variant="outlined"
-        style={{
+        sx={{
           maxWidth: "30px",
           maxHeight: "30px",
           minWidth: "30px",
@@ -24,7 +24,7 @@ const AddTodo = (props) => {
       </Button>
       <Button
       variant="outlined"
-        style={{
+        sx={{
           maxWidth: "30px",
           maxHeight: "30px",
           minWidth: "30px",

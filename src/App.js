@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AddTodo from "./AddTodo";
 import "./index";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Card, List, TextField, Typography } from "@mui/material";
+import axios from "axios";
 
 let editId;
 const App = () => {
@@ -13,61 +14,62 @@ const App = () => {
   const list = useSelector((state) => state.list);
   const isEditing = useSelector((state) => state.isEditing);
 
+  useEffect(() => {
+    getData();
+  }, []);
+  const getData = () => {
+    axios.get("http://localhost:3000/posts").then((post) => {
+      dispatch({
+        type: "SHOW_LIST",
+        payload: {
+          data: post.data,
+        },
+      });
+    });
+  };
+
   const listOfItem = (e) => {
     if (isEditing === false) {
       e.preventDefault();
       console.log(editId);
-      dispatch({
-        type: "LIST_OF_ITEM",
-        payload: {
-          id: editId,
-          data: inputList,
-        },
-      });
+      const allInputData = {
+        data: inputList,
+      };
+      axios
+        .put(`http://localhost:3000/posts/${editId}`, allInputData)
+        .then((res) => {
+          getData();
+        });
       setInputList("");
       // editId=null
+
+      return;
     } else {
+      console.log("else");
       e.preventDefault();
-      dispatch({
-        type: "LIST_OF_ITEM",
-        payload: { id: new Date().getTime().toString(), data: inputList },
+      const allInputData = {
+        data: inputList,
+      };
+      axios.post(`http://localhost:3000/posts`, allInputData).then((res) => {
+        setInputList("");
       });
-      setInputList("");
+      getData();
     }
   };
 
-  // const listOfItem = () => {
-  //   if (inputList === "") {
-  //     return alert("Input Felid is empty");
-  //   } else if (inputList && !isEditing) {
-  //     setItems(
-  //       items.map((elem) => {
-  //         if (elem.id == isEditItem) return { ...elem, name: inputList };
-  //         return elem;
-  //       })
-  //     );
-  //     setIsEditing(true);
-  //     setInputList("");
-  //     setIsEditItem(null);
-  //   } else
-  //     setItems((oldValue) => {
-  //       const allInputData = {
-  //         id: new Date().getTime().toString(),
-  //         name: inputList,
-  //       };
-  //       return [...oldValue, allInputData];
-  //     });
-  //   setInputList("");
-  // };
   const deleteItem = (id) => {
-    dispatch({
-      type: "DELETE_ITEM",
-      id: id,
+    axios.delete(`http://localhost:3000/posts/${id}`).then(() => {
+      getData();
     });
+    // dispatch({
+    //   type: "DELETE_ITEM",
+    //   id: id,
+    // });
   };
   const editTodo = (id, data) => {
     editId = id;
     setInputList(data);
+
     dispatch({
       type: "Edit_ITEM",
       payload: {
@@ -75,60 +77,57 @@ const App = () => {
         data: data,
       },
     });
-
-    // let newEditItem = items.find((elem) => {
-    //   return elem.id == id;
-    // });
-    // setIsEditing(false);
-    // setInputList(newEditItem.name);
-    // setIsEditItem(id);
   };
 
-  // const deleteItem = (id) => {
-  //   setItems((oldValue) => {
-  //     return oldValue.filter((arrElement) => {
-  //       return arrElement.id != id;
-  //     });
-  //   });
-  // };
-  // const editTodo = (id) => {
-  //   let newEditItem = items.find((elem) => {
-  //     return elem.id == id;
-  //   });
-  //   setIsEditing(false);
-  //   setInputList(newEditItem.name);
-  //   setIsEditItem(id);
-  // };
-
   return (
-    <Box className="main_div">
-      <Box className="center_div">
-        <br />
-        <h1>ToDo List</h1>
-        <br />
-        <form onSubmit={listOfItem}>
-          <input
-            type="text"
-            placeholder="Enter text here"
-            // itemEvent
+    <Box
+      sx={{
+        bgcolor: "#6983aa",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Card
+        sx={{
+          bgcolor: "whitesmoke",
+          color: "black",
+          width: "25%",
+          maxHeight: 400,
+          overflowY: "auto",
+          height: 400,
+          borderRadius: 2,
+        }}
+      >
+        <Typography sx={{ textAlign: "center", mt: 1 }} variant="h4">
+          ToDo List
+        </Typography>
 
-            value={inputList}
+        <form onSubmit={listOfItem}>
+          <TextField
+            label="Enter text here"
             onChange={(e) => setInputList(e.target.value)}
+            value={inputList}
           />
+          
 
           {isEditing ? (
             <Button
-              style={{
-                maxWidth: "300px",
-                maxHeight: "30px",
-                minWidth: "30px",
-                minHeight: "30px",
+              sx={{
+                p: "16px",
+                ml: 1,
+                // margin
+
+                // maxWidth: "300px",
+                // maxHeight: "30px",
+                // minWidth: "30px",
+                // minHeight: "30px",
               }}
               type="submit"
               variant="contained"
-             
             >
-            <AddIcon />
+              <AddIcon />
             </Button>
           ) : (
             <Button
@@ -140,14 +139,13 @@ const App = () => {
               }}
               type="submit"
               variant="contained"
-              
             >
               <EditIcon />
             </Button>
           )}
         </form>
 
-        <ol>
+        <List>
           {list.map((itemVal, index) => {
             return (
               <AddTodo
@@ -159,8 +157,8 @@ const App = () => {
               />
             );
           })}
-        </ol>
-      </Box>
+        </List>
+      </Card>
     </Box>
   );
 };
