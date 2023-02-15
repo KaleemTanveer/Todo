@@ -24,7 +24,8 @@ const AddTodo = (props) => {
       </Button>
       <Button
       variant="outlined"
-        sx={{
+        sx
+        ={{
           maxWidth: "30px",
           maxHeight: "30px",
           minWidth: "30px",

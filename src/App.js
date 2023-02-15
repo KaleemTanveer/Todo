@@ -41,7 +41,6 @@ const App = () => {
           getData();
         });
       setInputList("");
-      // editId=null
 
       return;
     } else {
@@ -61,10 +60,6 @@ const App = () => {
     axios.delete(`http://localhost:3000/posts/${id}`).then(() => {
       getData();
     });
-    // dispatch({
-    //   type: "DELETE_ITEM",
-    //   id: id,
-    // });
   };
   const editTodo = (id, data) => {
     editId = id;
@@ -117,12 +112,7 @@ const App = () => {
               sx={{
                 p: "16px",
                 ml: 1,
-                // margin
-
-                // maxWidth: "300px",
-                // maxHeight: "30px",
-                // minWidth: "30px",
-                // minHeight: "30px",
+                
               }}
               type="submit"
               variant="contained"
