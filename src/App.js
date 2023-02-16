@@ -6,60 +6,38 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import { Box, Button, Card, List, TextField, Typography } from "@mui/material";
 import axios from "axios";
+import { getData, delData, postData, editData } from "./action";
 
 let editId;
 const App = () => {
   const [inputList, setInputList] = useState("");
   const dispatch = useDispatch();
-  const list = useSelector((state) => state.list);
-  const isEditing = useSelector((state) => state.isEditing);
+  const list = useSelector((state) => state.todoReducer.list);
+  const isEditing = useSelector((state) => state.todoReducer.isEditing);
 
   useEffect(() => {
-    getData();
+    dispatch(getData());
   }, []);
-  const getData = () => {
-    axios.get("http://localhost:3000/posts").then((post) => {
-      dispatch({
-        type: "SHOW_LIST",
-        payload: {
-          data: post.data,
-        },
-      });
-    });
-  };
 
   const listOfItem = (e) => {
     if (isEditing === false) {
       e.preventDefault();
       console.log(editId);
-      const allInputData = {
-        data: inputList,
-      };
-      axios
-        .put(`http://localhost:3000/posts/${editId}`, allInputData)
-        .then((res) => {
-          getData();
-        });
+      dispatch(editData(inputList, editId));
       setInputList("");
-
+      dispatch(getData());
       return;
     } else {
-      console.log("else");
+      setInputList("");
       e.preventDefault();
-      const allInputData = {
-        data: inputList,
-      };
-      axios.post(`http://localhost:3000/posts`, allInputData).then((res) => {
-        setInputList("");
-      });
-      getData();
+      dispatch(postData(inputList));
+      dispatch(getData());
     }
   };
 
   const deleteItem = (id) => {
-    axios.delete(`http://localhost:3000/posts/${id}`).then(() => {
-      getData();
-    });
+    dispatch(delData(id));
+    dispatch(getData());
   };
   const editTodo = (id, data) => {
     editId = id;
@@ -105,14 +83,12 @@ const App = () => {
             onChange={(e) => setInputList(e.target.value)}
             value={inputList}
           />
-          
 
           {isEditing ? (
             <Button
               sx={{
                 p: "16px",
                 ml: 1,
-                
               }}
               type="submit"
               variant="contained"

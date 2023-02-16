@@ -1,11 +1,10 @@
-import { createStore } from "redux";
 const initialState = {
   list: [],
   isEditing: true,
   setInput: [],
 };
 
-const todoReducer = (state = initialState, action) => {
+export const todoReducer = (state = initialState, action) => {
   switch (action.type) {
     case "SHOW_LIST":
       return {
@@ -55,6 +54,3 @@ const todoReducer = (state = initialState, action) => {
       return state;
   }
 };
-const store = createStore(todoReducer);
-
-export default store;
