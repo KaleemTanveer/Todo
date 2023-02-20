@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import { Box, Button, Card, List, TextField, Typography } from "@mui/material";
 import axios from "axios";
-import { getData, delData, postData, editData } from "./action";
+import { delData, postData, editData, getData } from "./action";
 
 let editId;
 const App = () => {
@@ -20,7 +20,10 @@ const App = () => {
   }, []);
 
   const listOfItem = (e) => {
-    if (isEditing === false) {
+    if (inputList === "") {
+      alert("Enter text here");
+      return;
+    } else if (isEditing === false) {
       e.preventDefault();
       console.log(editId);
       dispatch(editData(inputList, editId));
@@ -34,6 +37,8 @@ const App = () => {
       dispatch(getData());
     }
   };
+
+  
 
   const deleteItem = (id) => {
     dispatch(delData(id));
@@ -53,6 +58,7 @@ const App = () => {
   };
 
   return (
+    
     <Box
       sx={{
         bgcolor: "#6983aa",
@@ -78,6 +84,7 @@ const App = () => {
         </Typography>
 
         <form onSubmit={listOfItem}>
+        
           <TextField
             label="Enter text here"
             onChange={(e) => setInputList(e.target.value)}
@@ -110,7 +117,7 @@ const App = () => {
             </Button>
           )}
         </form>
-
+        
         <List>
           {list.map((itemVal, index) => {
             return (

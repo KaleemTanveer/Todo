@@ -1,12 +1,22 @@
-import React from "react";
-import { createStore, applyMiddleware, combineReducers } from "redux";
-import thunk from "redux-thunk";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { todoReducer } from "./reducer";
+import createSagaMiddleware from "@redux-saga/core";
+import saga from "./Saga";
 
-const reducer = combineReducers({
+
+const sagaMiddleware = createSagaMiddleware();
+
+const reducer =  combineReducers({
   todoReducer,
-});
+  
+})
 
-const store = createStore(reducer,applyMiddleware(thunk));
+
+const store = configureStore({ reducer, 
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware)}
+ 
+)
+
+sagaMiddleware.run(saga);
 
 export default store;
