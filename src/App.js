@@ -16,8 +16,13 @@ const App = () => {
   const isEditing = useSelector((state) => state.todoReducer.isEditing);
 
   useEffect(() => {
-    dispatch(getData());
+    getData();
   }, []);
+  const getData = () => {
+    dispatch({
+      type: "SHOW_LIST",
+    });
+  };
 
   const listOfItem = (e) => {
     if (inputList === "") {
@@ -26,23 +31,32 @@ const App = () => {
     } else if (isEditing === false) {
       e.preventDefault();
       console.log(editId);
-      dispatch(editData(inputList, editId));
+      dispatch({
+        type: "edit",
+        id: editId,
+        data: inputList,
+      });
+      // dispatch(editData(inputList, editId));
       setInputList("");
-      dispatch(getData());
+      getData();
       return;
     } else {
       setInputList("");
       e.preventDefault();
-      dispatch(postData(inputList));
-      dispatch(getData());
+      dispatch({
+        type: "Post",
+        data: inputList,
+      });
+      getData();
     }
   };
 
-  
-
   const deleteItem = (id) => {
-    dispatch(delData(id));
-    dispatch(getData());
+    dispatch({
+      type: "DELETE_ITEM",
+      id: id,
+    });
+    getData();
   };
   const editTodo = (id, data) => {
     editId = id;
@@ -58,7 +72,6 @@ const App = () => {
   };
 
   return (
-    
     <Box
       sx={{
         bgcolor: "#6983aa",
@@ -84,7 +97,6 @@ const App = () => {
         </Typography>
 
         <form onSubmit={listOfItem}>
-        
           <TextField
             label="Enter text here"
             onChange={(e) => setInputList(e.target.value)}
@@ -117,7 +129,7 @@ const App = () => {
             </Button>
           )}
         </form>
-        
+
         <List>
           {list.map((itemVal, index) => {
             return (

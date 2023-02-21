@@ -4,6 +4,7 @@ import axios from "axios";
 
 function* getData() {
   let data = yield axios.get("http://localhost:3000/posts");
+
   yield put({
     type: "Api_data",
     payload: {
@@ -18,29 +19,33 @@ function* delData(id) {
 }
 
 function* postData(data) {
-  axios.post(`http://localhost:3000/posts`, data.data);
-  yield put({
-    type: "LIST_OF_ITEM",
-    payload: {
-      data: data.data,
-    },
-  });
+  console.log(data.data);
+  const allInputData = {
+    data: data.data,
+  };
+  yield axios.post(`http://localhost:3000/posts`, allInputData);
+  // yield put({
+  //   type: "LIST_OF_ITEM",
+  //   payload: {
+  //     data: data.data,
+  //   },
+  // });
 }
 
 function* editData(data) {
   console.log(data.id);
   const allInputData = {
-    id:data.id,
+    id: data.id,
     data: data.data,
   };
   yield axios.put(`http://localhost:3000/posts/${data.id}`, allInputData);
-      yield put({
-        type: "LIST_OF_ITEM",
-        payload: {
-          data: data.data,
-          id: data.data.id,
-        },
-      });
+  yield put({
+    type: "LIST_OF_ITEM",
+    payload: {
+      data: data.data,
+      id: data.data.id,
+    },
+  });
 }
 
 function* saga() {
